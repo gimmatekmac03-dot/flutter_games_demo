@@ -426,7 +426,7 @@ class NumberFlipPartyGame extends NotifyingMiniGame {
     if (_resetTimer > 0) {
       _resetTimer -= dt;
       if (_resetTimer <= 0) {
-        resetGame();
+        _resetProgressOnly();
       }
     }
   }
@@ -488,6 +488,19 @@ class NumberFlipPartyGame extends NotifyingMiniGame {
 
     setStatus('翻錯了，1 秒後重置。');
     _resetTimer = 1;
+  }
+
+  void _resetProgressOnly() {
+    _expected = 1;
+    _resetTimer = 0;
+    setCompleted(false);
+    setStatus('目標：依序翻出 1 到 6。下一張：$_expected');
+    for (int i = 0; i < _cards.length; i++) {
+      _cards[i].revealed = false;
+      _buttons[i]
+        ..label = '？'
+        ..fillColor = const Color(0xFF1976D2);
+    }
   }
 }
 
