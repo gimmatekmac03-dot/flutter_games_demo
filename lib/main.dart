@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_games_demo/interactive_modules_page.dart';
 import 'package:flutter_games_demo/normal_games_page.dart';
 
 void main() {
@@ -15,7 +16,7 @@ class SeniorGamesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: '長者趣味闖關',
+      title: '鉅碼科技長者數位互動模組',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E88E5)),
         useMaterial3: true,
@@ -50,7 +51,6 @@ class DifficultyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('長者趣味闖關')),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),
@@ -61,17 +61,20 @@ class DifficultyHomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
+                  '鉅碼科技長者數位互動模組',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontSize: 42,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 36),
+                Text(
                   '請先選擇難度',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 12),
-                Text(
-                  '簡易：現有的基礎闖關。普通：圖像化 Flame 小遊戲。',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(
@@ -108,7 +111,7 @@ class GameHubPage extends StatefulWidget {
 }
 
 class _GameHubPageState extends State<GameHubPage> {
-  final Map<int, bool> _completion = {for (int i = 1; i <= 10; i++) i: false};
+  final Map<int, bool> _completion = {for (int i = 1; i <= 12; i++) i: false};
 
   void _setCompleted(int gameId, bool isCompleted) {
     if (_completion[gameId] == isCompleted) {
@@ -124,7 +127,7 @@ class _GameHubPageState extends State<GameHubPage> {
     final int completed = _completion.values.where((v) => v).length;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('長者趣味闖關：10 小遊戲')),
+      appBar: AppBar(title: const Text('長者趣味闖關：簡易模式')),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -133,7 +136,7 @@ class _GameHubPageState extends State<GameHubPage> {
               padding: const EdgeInsets.all(16),
               children: [
                 Text(
-                  '完成進度：$completed / 10',
+                  '完成進度：$completed / 12',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),
@@ -210,6 +213,20 @@ class _GameHubPageState extends State<GameHubPage> {
                   title: '反應力測試',
                   child: ReactionGame(
                     onCompletionChanged: (v) => _setCompleted(10, v),
+                  ),
+                ),
+                GameCard(
+                  index: 11,
+                  title: '健康量測體驗（題組）',
+                  child: HealthMeasurementModule(
+                    onCompletionChanged: (v) => _setCompleted(11, v),
+                  ),
+                ),
+                GameCard(
+                  index: 12,
+                  title: '媒體識讀（題組）',
+                  child: MediaLiteracyModule(
+                    onCompletionChanged: (v) => _setCompleted(12, v),
                   ),
                 ),
                 const SizedBox(height: 24),

@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_games_demo/interactive_modules_page.dart';
 
 class NormalGameHubPage extends StatefulWidget {
   const NormalGameHubPage({super.key});
@@ -13,7 +14,7 @@ class NormalGameHubPage extends StatefulWidget {
 }
 
 class _NormalGameHubPageState extends State<NormalGameHubPage> {
-  final Map<int, bool> _completion = {for (int i = 1; i <= 10; i++) i: false};
+  final Map<int, bool> _completion = {for (int i = 1; i <= 12; i++) i: false};
 
   void _setCompleted(int gameId, bool isCompleted) {
     if (_completion[gameId] == isCompleted) {
@@ -38,7 +39,7 @@ class _NormalGameHubPageState extends State<NormalGameHubPage> {
               padding: const EdgeInsets.all(16),
               children: [
                 Text(
-                  '完成進度：$completed / 10',
+                  '完成進度：$completed / 12',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 10),
@@ -117,9 +118,58 @@ class _NormalGameHubPageState extends State<NormalGameHubPage> {
                   gameFactory: SimonLightGame.new,
                   onCompletionChanged: (v) => _setCompleted(10, v),
                 ),
+                NormalModuleCard(
+                  index: 11,
+                  title: 'Bingo 連線（單人模式）',
+                  child: BingoModule(
+                    onCompletionChanged: (v) => _setCompleted(11, v),
+                  ),
+                ),
+                NormalModuleCard(
+                  index: 12,
+                  title: '消消樂',
+                  child: MatchEliminateModule(
+                    onCompletionChanged: (v) => _setCompleted(12, v),
+                  ),
+                ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class NormalModuleCard extends StatelessWidget {
+  const NormalModuleCard({
+    super.key,
+    required this.index,
+    required this.title,
+    required this.child,
+  });
+
+  final int index;
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '第 $index 關：$title',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 12),
+            child,
+          ],
         ),
       ),
     );
