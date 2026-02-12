@@ -562,12 +562,13 @@ class _EmojiMemoryGameState extends State<EmojiMemoryGame> {
   late List<String> _options;
   bool _showAnswer = true;
   bool _complete = false;
+  bool _roundStarted = false;
   Timer? _hideTimer;
 
   @override
   void initState() {
     super.initState();
-    _newRound();
+    _newRound(startTimer: false);
   }
 
   @override
@@ -596,7 +597,7 @@ class _EmojiMemoryGameState extends State<EmojiMemoryGame> {
     });
   }
 
-  void _newRound() {
+  void _newRound({required bool startTimer}) {
     _emojiPool.shuffle(_random);
     _target = _emojiPool.take(3).join(' ');
     final choices = <String>{_target};
@@ -606,16 +607,30 @@ class _EmojiMemoryGameState extends State<EmojiMemoryGame> {
     }
     _options = choices.toList()..shuffle(_random);
     _showAnswer = true;
+    _roundStarted = startTimer;
     _setComplete(false);
-    _startHideTimer();
+    if (startTimer) {
+      _startHideTimer();
+    } else {
+      _hideTimer?.cancel();
+    }
+  }
+
+  void _restartRound() {
+    setState(() {
+      _newRound(startTimer: true);
+    });
   }
 
   void _select(String answer) {
+    if (_showAnswer || !_roundStarted) {
+      return;
+    }
     setState(() {
       if (answer == _target) {
         _setComplete(true);
       } else {
-        _newRound();
+        _newRound(startTimer: true);
       }
     });
   }
@@ -644,7 +659,11 @@ class _EmojiMemoryGameState extends State<EmojiMemoryGame> {
         const SizedBox(height: 8),
         StatusLine(
           completed: _complete,
-          text: _complete ? '完成！' : '請選出剛剛看到的組合',
+          text: _complete
+              ? '完成！'
+              : _showAnswer
+              ? (_roundStarted ? '記住圖案中，2 秒後會遮住' : '按「開始記憶」開始本關')
+              : '請選出剛剛看到的組合',
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -660,9 +679,12 @@ class _EmojiMemoryGameState extends State<EmojiMemoryGame> {
         ),
         const SizedBox(height: 12),
         OutlinedButton(
-          onPressed: _newRound,
+          onPressed: _restartRound,
           style: OutlinedButton.styleFrom(minimumSize: const Size(120, 60)),
-          child: const Text('再玩一次', style: TextStyle(fontSize: 22)),
+          child: Text(
+            _roundStarted ? '再玩一次' : '開始記憶',
+            style: const TextStyle(fontSize: 22),
+          ),
         ),
       ],
     );
